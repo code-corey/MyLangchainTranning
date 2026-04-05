@@ -2,15 +2,16 @@ import os
 
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
-os.environ["LANGCHAIN_API_KEY"] = "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"
+# os.environ["LANGCHAIN_API_KEY"] = ""
 
 # 创建模型
 model = ChatOpenAI(
-    model="qwen/qwen3.6-plus:free",
-    base_url="https://openrouter.ai/api/v1"
+    model=os.environ["ModelID"],
+    base_url="https://ark.cn-beijing.volces.com/api/v3"
 )
 
 # 准备提示
@@ -26,9 +27,24 @@ result= model.invoke(msg)
 parser= StrOutputParser()
 #print(parser.invoke(result))
 
+
+## 定义好模版
+promptTemplate = ChatPromptTemplate.from_messages(
+    [
+        ('system','把内容翻译成{language}'),
+        ('user','{text}')
+    ]
+)
+
 # 得到链
-chain = model | parser
+chain = promptTemplate | model | parser
 
 # 直接使用chain来调用
 
-print(chain.invoke(msg))
+
+## print(chain.invoke(msg))
+
+print(chain.invoke({
+    'language': 'English',
+    'text': '今天天气好'
+}))
