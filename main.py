@@ -20,7 +20,7 @@ msg=[
     HumanMessage(content="你吃了没")
 ]
 
-result= model.invoke(msg)
+# result= model.invoke(msg)
 # print(result)
 
 # 解析数据，格式化
@@ -46,5 +46,5 @@ chain = promptTemplate | model | parser
 
 print(chain.invoke({
     'language': 'English',
-    'text': '今天天气好'
+    'text': '今天天气好呀'
 }))
