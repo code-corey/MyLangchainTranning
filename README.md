@@ -258,7 +258,7 @@ for resp in do_message.stream(
     print(resp.content,end="-")
 ```
 
-- ⭕6-10构建文档和向量空间.mp4 
+- 🎯6-10构建文档和向量空间.mp4 
 文件: [04-ChatWithDocument.py](04-ChatWithDocument.py)
 
 首先需要安装一下依赖
@@ -297,7 +297,43 @@ retriever = RunnableLambda(vector_store.similarity_search).bind(k=1)
 print(retriever.batch(['咖啡猫', '老鼠']))
 ```
 
-- ⭕7-11检索器和模型结合.mp4
+- 🎯7-11检索器和模型结合.mp4
+
+首先我们得到了一个检索器，然后我们定义一个提示词模版。为了让检索器和模型结合，我们使用Chain,这样就完成了目标
+
+`chain = {'question': RunnablePassthrough(), 'context': retriever} | prompt_template | model`
+
+
+
+
+
+``` python
+retriever = RunnableLambda(vector_store.similarity_search).bind(k=1)
+
+## 提示模版
+message = """
+使用提供的上下文仅回答这个问题：
+{question}
+上下文：
+{context}
+"""
+
+## 这里我们获得了一个提示词的模版
+prompt_template = ChatPromptTemplate.from_messages([('human', message)])
+
+## 我们构建了一条链
+## 这里的question，我们需要再后面再传入进来，这里使用 RunnablePassthrough 进行占位，后面再传
+chain = {'question': RunnablePassthrough(), 'context': retriever} | prompt_template | model
+
+resp = chain.invoke("请求介绍一下红眼树蛙")
+
+print(resp.content)
+```
+
+
+
+
+
 - ⭕8-12Tavily搜索工具.mp4
 - ⭕9-13Agent代理的使用.mp4
 - ⭕10-14构建RAG对话应用(一).mp4
