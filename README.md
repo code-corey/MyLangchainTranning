@@ -2,8 +2,32 @@
 
 ## 环境：
 - Python 3.14
-- 大模型厂商：智普 https://docs.bigmodel.cn/
-- 
+
+
+## 大模型厂商：
+
+智普 https://docs.bigmodel.cn/
+
+![image-20260406224433294](assets/image-20260406224433294.png)
+
+
+
+魔塔社区 https://www.modelscope.cn/models
+
+![image-20260406224601586](assets/image-20260406224601586.png)
+
+硅基流动 https://cloud.siliconflow.cn/me/models
+
+![image-20260406224752688](assets/image-20260406224752688.png)
+
+
+
+火山方舟 https://www.volcengine.com/product/ark
+
+![image-20260406224850571](assets/image-20260406224850571.png)
+
+
+
 
 ## 1-LangChain基本理论
 🎯1-01Langchain是什么   
@@ -302,8 +326,6 @@ print(retriever.batch(['咖啡猫', '老鼠']))
 首先我们得到了一个检索器，然后我们定义一个提示词模版。为了让检索器和模型结合，我们使用Chain,这样就完成了目标
 
 `chain = {'question': RunnablePassthrough(), 'context': retriever} | prompt_template | model`
-
-
 
 
 
