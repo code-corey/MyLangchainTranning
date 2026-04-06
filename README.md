@@ -28,6 +28,12 @@
 
 
 
+OpenRouter：使用国外的模型 https://openrouter.ai/models
+
+![image-20260406230311097](assets/image-20260406230311097.png)
+
+
+
 
 ## 1-LangChain基本理论
 🎯1-01Langchain是什么   
