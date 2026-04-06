@@ -147,7 +147,7 @@ POST http://127.0.0.1:8000/chain/invoke
 
 
 
-- ⭕4-08LangChain构建聊天机器人.mp4
+- 🎯4-08LangChain构建聊天机器人.mp4
 
 ```
 pip install langchain_community
@@ -157,7 +157,7 @@ pip install langchain_community
 - 流式输出
 
 
-- ⭕4-08LangChain构建聊天机器人.mp4
+- 🎯4-08LangChain构建聊天机器人.mp4
 
 在构建聊天机器人的过程当中，我们得让他记住之间的历史对话记录才行。所以得使用几个关键的要素
 
@@ -236,7 +236,7 @@ print(resp.content)
 ```
 
 
-- ⭕5-09流式输出的处理.mp4
+- 🎯5-09流式输出的处理.mp4
 
 普通的调用使用的是 invoke，流式调用使用的是stream
 
