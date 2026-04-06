@@ -1,5 +1,10 @@
 # LangChain学习之旅
 
+## 环境：
+- Python 3.14
+- 大模型厂商：智普 https://docs.bigmodel.cn/
+- 
+
 ## 1-LangChain基本理论
 🎯1-01Langchain是什么   
 是什么？
@@ -28,11 +33,11 @@
 2、学习辅助：比如说学习10篇论文，让AI先把所有的文档先看完，然后进行针对性的学习
 3、客户数据和科学的分析：链接公司的数据库做分析
 
-
-🎯4-04Langchain的环境和监控   
+🎯4-04 Langchain 的环境和监控
+``` shell
 pip install langchain-openai
 pip install langchain
-
+```
 
 LangSmith究竟是用来干什么的？
 > 用于构建一个生产级LLM平台，从原型到生产的全流程的工具和服务，并且提供了调试，测试，监控，评估等功能 LLM框架构建的链和智能代理的功能。
@@ -253,7 +258,45 @@ for resp in do_message.stream(
     print(resp.content,end="-")
 ```
 
-- ⭕6-10构建文档和向量空间.mp4
+- ⭕6-10构建文档和向量空间.mp4 
+文件: [04-ChatWithDocument.py](04-ChatWithDocument.py)
+
+首先需要安装一下依赖
+```
+pip install langchain_chroma
+```
+
+我们现在需要构建文档，把文档的集合构建一个向量库
+``` python
+Documents = [
+    Document(
+        page_content="大熊猫是中国特有物种，以竹子为主食，被誉为‘活化石’和‘中国国宝’。",
+        metadata={"name": "大熊猫", "category": "哺乳动物", "habitat": "中国四川、陕西等山区", "diet": "竹子"}) ]
+```
+
+定义一个嵌入模型，用于把输入的文档，转换成向量库,使用 Chroma.from_documents的方法
+``` python
+## 实例化一个向量库,以向量文档为依托，openAI的
+embeddings = OpenAIEmbeddings(
+    model="embedding-3",
+    base_url=os.environ["BaseUrl"]
+)
+vector_store = Chroma.from_documents(Documents, embedding=embeddings)
+```
+
+对向量存储可以直接的进行搜索 `vector_store.similarity_search(xx)`，也可以封装成Runnable接口
+
+通过使用RunnableLambda,把向量搜索封装成Runnable接口
+``` python
+## 对文档进行相似度查询，分数越低，相似度越高
+# print(vector_store.similarity_search_with_score("狗熊"))
+
+## 构建一个检索器,选取相似度最高的1个
+retriever = RunnableLambda(vector_store.similarity_search).bind(k=1)
+
+print(retriever.batch(['咖啡猫', '老鼠']))
+```
+
 - ⭕7-11检索器和模型结合.mp4
 - ⭕8-12Tavily搜索工具.mp4
 - ⭕9-13Agent代理的使用.mp4

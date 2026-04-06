@@ -11,7 +11,7 @@ os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # 定义模型
 model = ChatOpenAI(
     model=os.environ["ModelID"],
-    base_url="https://ark.cn-beijing.volces.com/api/v3",
+    base_url=os.environ["BaseUrl"]
 )
 
 # 定义模版
