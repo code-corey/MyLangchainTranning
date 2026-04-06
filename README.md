@@ -237,6 +237,22 @@ print(resp.content)
 
 
 - ⭕5-09流式输出的处理.mp4
+
+普通的调用使用的是 invoke，流式调用使用的是stream
+
+``` py
+# 直接调用 do_message方法，执行 invoke方法
+# stream方法 是流式输出，返回一个一个Token
+for resp in do_message.stream(
+    {
+        "my-msg": [HumanMessage(content="我是谁")],
+        "language": "中文",
+    },
+    config=config,
+):
+    print(resp.content,end="-")
+```
+
 - ⭕6-10构建文档和向量空间.mp4
 - ⭕7-11检索器和模型结合.mp4
 - ⭕8-12Tavily搜索工具.mp4
