@@ -15,6 +15,8 @@ model = ChatOpenAI(
 )
 
 # 定义模版
+## MessagesPlaceholder 这里的占位符是因为我们需要引用历史记录Id，所以在这里，我们使用占用
+
 prompt_template = ChatPromptTemplate.from_messages(
     [
         ("system", "你是一个乐于助人的助手，用{language}尽可能回答问题。"),
