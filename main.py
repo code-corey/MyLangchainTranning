@@ -1,9 +1,11 @@
 import os
 
+from fastapi import FastAPI
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
+from langserve import add_routes
 
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 # os.environ["LANGCHAIN_API_KEY"] = ""
@@ -48,3 +50,17 @@ print(chain.invoke({
     'language': 'English',
     'text': '今天天气好呀'
 }))
+
+
+app= FastAPI(title='我的Langchain服务',version='V1.0',description="使用Langchain翻译任何语句的服务")
+
+add_routes(
+    app,
+    chain,
+    path="/chain"
+)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app,host="localhost",port=8000)
