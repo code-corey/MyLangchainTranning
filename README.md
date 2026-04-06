@@ -148,6 +148,94 @@ POST http://127.0.0.1:8000/chain/invoke
 
 
 - ⭕4-08LangChain构建聊天机器人.mp4
+
+```
+pip install langchain_community
+```
+
+- ChatHistory:
+- 流式输出
+
+
+- ⭕4-08LangChain构建聊天机器人.mp4
+
+在构建聊天机器人的过程当中，我们得让他记住之间的历史对话记录才行。所以得使用几个关键的要素
+
+- ChatMessageHistory 对话的历史记录
+- RunnableWithMessageHistory 对话的时候，可以携带历史消息
+
+``` py
+import os
+
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.messages import HumanMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables import RunnableWithMessageHistory
+from langchain_openai import ChatOpenAI
+
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+
+# 定义模型
+model = ChatOpenAI(
+    model=os.environ["ModelID"],
+    base_url="https://ark.cn-beijing.volces.com/api/v3",
+)
+
+# 定义模版
+prompt_template = ChatPromptTemplate.from_messages(
+    [
+        ("system", "你是一个乐于助人的助手，用{language}尽可能回答问题。"),
+        MessagesPlaceholder(variable_name="history"),
+        MessagesPlaceholder(variable_name="my-msg"),
+    ]
+)
+
+# 定义链
+chain = prompt_template | model
+
+store: dict[str, ChatMessageHistory] = {}
+
+# 定义一个获取session历史记录的接口
+def get_session_history(session_id: str) -> ChatMessageHistory:
+    if session_id not in store:
+        store[session_id] = ChatMessageHistory()
+    return store[session_id]
+
+# 使用代用历史消息的方法来作为交流接口
+do_message = RunnableWithMessageHistory(
+    chain,
+    get_session_history,
+    input_messages_key="my-msg",
+    history_messages_key="history",
+)
+
+config = {"configurable": {"session_id": "zhangsan123"}}
+
+# 直接调用 do_message方法，执行 invoke方法
+resp = do_message.invoke(
+    {
+        "my-msg": [HumanMessage(content="我是Corey，今年40岁了")],
+        "language": "中文",
+    },
+    config=config,
+)
+
+print(resp.content)
+
+
+# 直接调用 do_message方法，执行 invoke方法
+resp = do_message.invoke(
+    {
+        "my-msg": [HumanMessage(content="我是谁")],
+        "language": "中文",
+    },
+    config=config,
+)
+
+print(resp.content)
+```
+
+
 - ⭕5-09流式输出的处理.mp4
 - ⭕6-10构建文档和向量空间.mp4
 - ⭕7-11检索器和模型结合.mp4
@@ -178,4 +266,6 @@ POST http://127.0.0.1:8000/chain/invoke
 - ⭕8-34文本自动摘要MapReduce(一)   .sz
 - ⭕9-35文本自动摘要MapReduce(二)   .sz
 - ⭕10-36文本自动摘要Refine方式   .sz
+
+
 
