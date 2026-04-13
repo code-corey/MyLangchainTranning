@@ -1,7 +1,12 @@
 # LangChain学习之旅
 
 ## 环境：
-- Python 3.14
+- Python 3.14+
+
+- 设置 uv的国内镜像源，加快速度
+``` shell
+[Environment]::SetEnvironmentVariable("UV_INDEX_URL", "https://pypi.tuna.tsinghua.edu.cn/simple", "User")
+```
 
 
 ## 大模型厂商：
