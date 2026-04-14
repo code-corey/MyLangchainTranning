@@ -9,7 +9,6 @@
 [Environment]::SetEnvironmentVariable("UV_INDEX_URL", "https://pypi.tuna.tsinghua.edu.cn/simple", "User")
 ```
 
-
 ## 大模型厂商：
 
 智普 https://docs.bigmodel.cn/
@@ -17,27 +16,24 @@
 ![image-20260406224433294](assets/image-20260406224433294.png)
 
 
-
 魔塔社区 https://www.modelscope.cn/models
 
 ![image-20260406224601586](assets/image-20260406224601586.png)
+
+阿里云百炼 https://bailian.console.aliyun.com/cn-beijing?tab=model#/model-usage
+![image-20260414140620118](https://storage-corey-1303844387.cos.ap-guangzhou.myqcloud.com/image-20260414140620118.png?imageSlim)
 
 硅基流动 https://cloud.siliconflow.cn/me/models
 
 ![image-20260406224752688](assets/image-20260406224752688.png)
 
-
-
 火山方舟 https://www.volcengine.com/product/ark
 
 ![image-20260406224850571](assets/image-20260406224850571.png)
 
-
-
 OpenRouter：使用国外的模型 https://openrouter.ai/models
 
 ![image-20260406230311097](assets/image-20260406230311097.png)
-
 
 
 
