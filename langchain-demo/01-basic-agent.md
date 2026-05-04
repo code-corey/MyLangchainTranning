@@ -54,3 +54,134 @@ agent.invoke({"messages": [{"role": "user", "content": "what is the weather in s
 1.  **版本匹配**：`create_agent` 并不是 LangChain 核心库中最标准的函数名（通常是 `create_tool_calling_agent` 或使用 `langgraph`）。这段代码看起来像是使用了某些特定简化版封装或较新的实验性 API。
 2.  **环境要求**：运行前必须在系统中设置 `DASHSCOPE_API_KEY` 环境变量，否则会报错。
 3.  **模型能力**：代码中使用了 `qwen3` 这种 2026 年的模型标识（根据你的代码上下文），这表明你正在使用非常前沿或自定义的 API 节点。
+
+```json
+{
+  "messages": [
+    {
+      "type": "HumanMessage",
+      "content": "what is the weather in sf",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "id": "ae7f1d9f-699f-4840-beaa-febcd97b833e"
+    },
+    {
+      "type": "AIMessage",
+      "content": "",
+      "additional_kwargs": {
+        "refusal": null
+      },
+      "response_metadata": {
+        "token_usage": {
+          "completion_tokens": 123,
+          "prompt_tokens": 280,
+          "total_tokens": 403,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": null,
+            "reasoning_tokens": 92,
+            "rejected_prediction_tokens": null,
+            "text_tokens": 123
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": null,
+            "cached_tokens": null,
+            "text_tokens": 280
+          }
+        },
+        "model_provider": "openai",
+        "model_name": "qwen3.5-flash",
+        "system_fingerprint": null,
+        "id": "chatcmpl-bc460c9b-9950-994a-ad18-64a30416ad21",
+        "finish_reason": "tool_calls",
+        "logprobs": null
+      },
+      "id": "lc_run--019deaf5-8167-7ea3-9d9d-7da6355bae54-0",
+      "tool_calls": [
+        {
+          "name": "get_weather",
+          "args": {
+            "city": "San Francisco"
+          },
+          "id": "call_63f17a38bd5a47debc168dba",
+          "type": "tool_call"
+        }
+      ],
+      "invalid_tool_calls": [],
+      "usage_metadata": {
+        "input_tokens": 280,
+        "output_tokens": 123,
+        "total_tokens": 403,
+        "input_token_details": {},
+        "output_token_details": {
+          "reasoning": 92
+        }
+      }
+    },
+    {
+      "type": "ToolMessage",
+      "content": "It's always sunny in San Francisco!",
+      "name": "get_weather",
+      "id": "c7ede768-330b-4f26-b2df-18e47dd15681",
+      "tool_call_id": "call_63f17a38bd5a47debc168dba"
+    },
+    {
+      "type": "AIMessage",
+      "content": "According to the forecast, it's sunny in San Francisco! ☀️",
+      "additional_kwargs": {
+        "refusal": null
+      },
+      "response_metadata": {
+         // Token 使用统计
+        "token_usage": {
+          "completion_tokens": 19, # 输出（AI 的回答）消耗的 token 数
+          "prompt_tokens": 332, #输入（用户问题 + 历史 + 工具返回）消耗的 token 数
+          "total_tokens": 351, 
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null, # 未使用（推测解码相关）
+            "audio_tokens": null, # 未使用（语音相关）
+            "reasoning_tokens": 0, # 推理 token 数。为 0 表示这次回答没有内部推理过程  说明这次回答是直接生成的，没有像 DeepSeek-R1 那样的"思考链"过
+            "rejected_prediction_tokens": null, # 未使用
+            "text_tokens": 19 # 实际文本输出的 token 数
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": null,
+            "cached_tokens": null, --> 未命中缓存（如果有缓存可以降低成本）
+            "text_tokens": 332 --> 所有文本输入（对话历史 + 系统提示 + 工具返回）的 token 数
+          }
+        },
+        "model_provider": "openai",
+        "model_name": "qwen3.5-flash",
+        "system_fingerprint": null,
+        "id": "chatcmpl-ffa5aece-5a79-957f-837a-e9dcc38536e7", # 这次 API 调用的唯一 ID，用于追踪和调试
+        "finish_reason": "stop",
+        "logprobs": null  # 没有开启 logprobs（否则会返回每个 token 的 log 概率）
+      },
+      "id": "lc_run--019deaf5-8acb-7611-b502-e73b114f1660-0",
+      "tool_calls": [],
+      "invalid_tool_calls": [],
+      "usage_metadata": {
+        "input_tokens": 332,
+        "output_tokens": 19,
+        "total_tokens": 351,
+        "input_token_details": {},
+        "output_token_details": {
+          "reasoning": 0
+        }
+      }
+    }
+  ]
+}
+
+```
+
+当前的对话理解
+``` 
+用户：旧金山天气怎么样？
+  ↓
+AI：调用 get_weather 工具（用了 92 个推理 token）
+  ↓
+工具：It's always sunny in San Francisco!
+  ↓
+AI 最终回答：According to the forecast, it's sunny in San Francisco! ☀️
+```

@@ -9,7 +9,7 @@ def get_weather(city: str) -> str:
 # 初始化百炼（DashScope）的 OpenAI 兼容模式大模型
 # 请确保环境变量中已设置 DASHSCOPE_API_KEY
 llm = ChatOpenAI(
-    model="qwen3-vl-flash-2026-01-22", # 也可以使用 qwen-max, qwen-turbo 等
+    model="qwen3.5-flash", # 也可以使用 qwen-max, qwen-turbo 等
     api_key=os.environ.get("DASHSCOPE_API_KEY"),
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
@@ -21,6 +21,12 @@ agent = create_agent(
 )
 
 # Run the agent
-print(agent.invoke(
-    {"messages": [{"role": "user", "content": "what is the weather in sf"}]}
-))
+# print(agent.invoke(
+#     {"messages": [{"role": "user", "content": "what is the weather in sf"}]}
+# ))
+
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": "What's the weather in San Francisco?"}]}
+)
+print(result["messages"][-1].content_blocks)
