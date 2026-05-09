@@ -21,4 +21,5 @@ dependencies = [
     "tavily-python>=0.7.23",
     "torch>=2.11.0",
     "torchvision>=0.26.0",
+    "transformers>=5.8.0",
 ]

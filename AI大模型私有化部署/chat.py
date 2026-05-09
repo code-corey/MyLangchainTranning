@@ -18,6 +18,113 @@ from transformers import (
     TextIteratorStreamer
 )
 
+"""
+========================================
+AutoModelForCausalLM
+========================================
+
+作用：自动识别并加载适合因果语言建模的模型
+因果语言模型：根据前面的token预测下一个token（自回归生成）
+典型模型：GPT、LLaMA、GLM、Qwen 等
+
+# 使用示例
+model = AutoModelForCausalLM.from_pretrained("gpt2")
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b")
+model = AutoModelForCausalLM.from_pretrained("ZhipuAI/glm-4-9b-chat")
+
+========================================
+AutoTokenizer
+========================================
+作用：自动识别并加载与模型匹配的分词器
+分词器功能：将文本转换为模型能理解的 token ID 序列
+
+# 使用示例
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
+# 文本转token
+text = "Hello, how are you?"
+tokens = tokenizer(text)  # {'input_ids': [15496, 11, 703, 389, 345, 30], ...}
+# token转文本
+text = tokenizer.decode([15496, 11, 703, 389, 345, 30])  # 'Hello, how are you?'
+
+
+========================================
+PreTrainedModel
+========================================
+作用：所有预训练模型的基类
+from_pretrained()：加载预训练权重
+save_pretrained()：保存模型
+to()：移动到设备（CPU/GPU）
+eval()/train()：切换模式
+
+========================================
+PreTrainedTokenizer
+========================================
+作用：所有Python实现的分词器基类
+特点：纯Python实现，速度较慢但功能完整
+encode()：文本 → token IDs
+decode()：token IDs → 文本
+batch_encode()：批量编码
+
+# 使用纯Python实现的分词器
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased", use_fast=False)
+# use_fast=False 使用 PreTrainedTokenizer
+
+
+========================================
+PreTrainedTokenizerFast
+========================================
+作用：所有Rust实现的分词器基类
+点：底层用Rust实现，速度很快（通常快10-20倍）
+功能：与 PreTrainedTokenizer 相同，但性能更好
+
+
+
+========================================
+StoppingCriteria
+========================================
+作用：在生成文本时判断是否应该停止
+自定义停止逻辑：继承这个类实现自己的停止条件
+
+========================================
+StoppingCriteriaList
+========================================
+作用：管理多个停止条件
+逻辑：只要列表中任意一个条件满足，就停止生成
+# 创建多个停止条件
+criteria1 = StopOnTokens(token_id=2)      # 遇到[EOS]停止
+criteria2 = StopOnTokens(token_id=13)     # 遇到句号停止
+criteria3 = MaxLengthCriteria(max_length=100)  # 达到100token停止
+
+# 组合成列表
+stop_criteria = StoppingCriteriaList([criteria1, criteria2, criteria3])
+
+# 生成时使用
+outputs = model.generate(input_ids, stopping_criteria=stop_criteria)
+
+
+
+
+========================================
+TextIteratorStreamer
+========================================
+作用：流式生成文本，逐token输出
+特点：
+实时输出，不用等待完整生成
+配合多线程使用
+提升用户体验
+
+# 你的代码中的使用
+streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
+
+# 在子线程中生成
+t = Thread(target=model.generate, kwargs=generate_kwargs)
+t.start()
+
+# 主线程实时获取生成的token
+for new_token in streamer:
+    print(new_token, end='', flush=True)  # 逐字显示
+"""
+
 # 定义模型和分词器的类型别名
 # ModelType = Union[PreTrainedModel, PeftModelForCausalLM]
 ModelType = PreTrainedModel
@@ -34,7 +141,30 @@ def _resolve_path(path: Union[str, Path]) -> Path:
     解析相对路径并返回绝对路径
     :param path: 输入的路径字符串或Path对象
     :return: 绝对路径的Path对象
+
+    expanduser ：展开用户目录符号~
+    # 示例
+    Path("~/models").expanduser()
+    # 结果：Path("/home/username/models")  （假设用户名是username）
+
+    Path("~/.cache").expanduser()
+    # 结果：Path("/home/username/.cache")
+
+
+    .resolve()  解析路径中的.和.. ,将相对路径转换为绝对路径
+    # 示例
+    Path("./my_model").resolve()
+    # 假设当前在 /home/user/projects
+    # 结果：Path("/home/user/projects/my_model")
+
+    Path("../models").resolve()
+    # 结果：Path("/home/user/models")  （上一级目录的models）
+
+    Path("models/./test/../final").resolve()
+    # 结果：Path("/home/user/projects/models/final")  （规范化路径）
+
     """
+
     return Path(path).expanduser().resolve()
 
 
@@ -62,6 +192,22 @@ def load_model_and_tokenizer(
         # 强制补丁：如果类里没有 all_tied_weights_keys，就给它一个
         if not hasattr(model_class, "all_tied_weights_keys"):
             model_class.all_tied_weights_keys = property(lambda self: getattr(self, "_tied_weights_keys", []))
+            """
+            lambda self: getattr(self, "_tied_weights_keys", [])
+            lambda => 匿名函数
+            self => 类似普通函数的参数
+            getattr(对象, "属性名", 默认值)
+            
+            
+            # 等价的标准写法
+            property(lambda self: getattr(self, "_tied_weights_keys", []))
+            == 
+            class MyClass:
+                @property
+                def all_tied_weights_keys(self):
+                    return getattr(self, "_tied_weights_keys", [])
+            """
+
     # --- 新增修复代码结束 ---
 
     model = AutoModelForCausalLM.from_pretrained(
